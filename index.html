@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MeetMind — AI Meeting Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@300;400;500;700;800&family=Noto+Kufi+Arabic:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f9;--bg2:#e8eef6;--bg3:#dde5f0;
+  --surface:#ffffff;--surface2:#f7f9fc;
+  --navy:#0d1b3e;--navy2:#162550;--navy3:#1e3166;
+  --blue:#1a56db;--blue2:#2563eb;--blue3:#3b82f6;
+  --line:rgba(13,27,62,0.08);--line2:rgba(13,27,62,0.14);--line3:rgba(13,27,62,0.22);
+  --ink:#0d1b3e;--ink2:#1e3166;--ink3:#2d4a8a;
+  --muted:#5a6e99;--muted2:#8499c4;--muted3:#b8c8e8;
+  --green:#059669;--green-bg:#ecfdf5;
+  --amber:#d97706;--amber-bg:#fffbeb;
+  --red:#dc2626;--red-bg:#fef2f2;
+  --gold:#c9a84c;
+  --r:14px;--r2:9px;--r3:6px;
+  --shadow:0 1px 3px rgba(13,27,62,.08),0 4px 16px rgba(13,27,62,.06);
+  --shadow2:0 4px 24px rgba(13,27,62,.12),0 1px 4px rgba(13,27,62,.08);
+  --ff:'Cabinet Grotesk','Noto Kufi Arabic',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{font-size:16px}
+body{background:var(--bg);color:var(--ink);font-family:var(--ff);min-height:100vh;overflow-x:hidden}
+
+/* ── MESH BG ── */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 10% 20%,rgba(26,86,219,.05) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 80%,rgba(13,27,62,.06) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 60% at 50% 50%,rgba(59,130,246,.03) 0%,transparent 70%)}
+
+/* ── TOPNAV ── */
+.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line2);
+  padding:0 32px;display:flex;align-items:center;height:60px;gap:0}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-mark svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
+.logo-name{font-size:1.05rem;font-weight:800;color:var(--navy);letter-spacing:-.02em}
+.logo-name span{color:var(--blue2)}
+.nav-sep{flex:1}
+.nav-badge{background:var(--navy);color:#fff;font-size:.65rem;font-weight:700;
+  letter-spacing:.1em;padding:4px 12px;border-radius:20px;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:24px;margin:0 28px}
+.nav-link{font-size:.83rem;font-weight:500;color:var(--muted);text-decoration:none;transition:color .15s}
+.nav-link:hover{color:var(--ink)}
+
+/* ── PAGE ── */
+.page{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:32px 24px 80px}
+
+/* ── HERO ── */
+.hero{text-align:center;padding:48px 0 40px;animation:fdown .7s cubic-bezier(.22,1,.36,1) both}
+@keyframes fdown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-chip{display:inline-flex;align-items:center;gap:7px;
+  background:var(--surface);border:1px solid var(--line2);border-radius:30px;
+  padding:5px 16px;font-size:.7rem;font-weight:600;letter-spacing:.1em;
+  color:var(--blue2);margin-bottom:20px;text-transform:uppercase;
+  box-shadow:var(--shadow)}
+.hero-chip-dot{width:6px;height:6px;border-radius:50%;background:var(--blue2);
+  box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+
+h1{font-size:clamp(2.2rem,5.5vw,3.6rem);font-weight:800;line-height:1.05;
+  letter-spacing:-.03em;color:var(--navy);margin-bottom:14px}
+h1 span{
+  background:linear-gradient(135deg,var(--blue2),var(--blue3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.tagline{font-size:1rem;color:var(--muted);line-height:1.75;max-width:500px;
+  margin:0 auto 28px;font-weight:400}
+
+.stat-strip{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--line2);border-radius:12px;
+  padding:0;overflow:hidden;box-shadow:var(--shadow);display:inline-flex}
+.stat-item{padding:12px 24px;display:flex;flex-direction:column;align-items:center;gap:2px;
+  border-right:1px solid var(--line)}
+.stat-item:last-child{border-right:none}
+.stat-n{font-size:1.3rem;font-weight:800;color:var(--navy);line-height:1}
+.stat-l{font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted2)}
+
+/* ── API KEY ── */
+.key-section{margin-bottom:24px;animation:fup .5s .1s cubic-bezier(.22,1,.36,1) both}
+@keyframes fup{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.key-card{background:var(--navy);border-radius:var(--r);padding:16px 22px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.key-info{flex:1;min-width:160px}
+.key-info strong{display:block;font-size:.82rem;font-weight:600;color:#fff;margin-bottom:2px}
+.key-info span{font-size:.72rem;color:var(--muted2)}
+.key-info a{color:#93c5fd;text-decoration:none}.key-info a:hover{color:#fff}
+.key-row{display:flex;gap:8px;flex:2;min-width:230px}
+
+input[type="password"],input[type="text"],textarea,select{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:var(--r2);color:#fff;font-family:var(--ff);
+  font-size:.83rem;padding:10px 14px;outline:none;
+  transition:border-color .2s,box-shadow .2s}
+input:focus,textarea:focus,select:focus{
+  border-color:rgba(255,255,255,.4);box-shadow:0 0 0 3px rgba(255,255,255,.08)}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.35)}
+input[type="password"],input[type="text"]{flex:1}
+
+.btn-save{background:var(--blue2);border:none;border-radius:var(--r2);color:#fff;
+  font-family:var(--ff);font-size:.8rem;font-weight:700;padding:10px 18px;
+  cursor:pointer;transition:background .2s,transform .1s;white-space:nowrap}
+.btn-save:hover{background:var(--blue3)}.btn-save:active{transform:scale(.97)}
+
+/* ── MAIN CARD ── */
+.main-card{background:var(--surface);border:1px solid var(--line2);border-radius:var(--r);
+  box-shadow:var(--shadow2);overflow:hidden;animation:fup .6s .05s cubic-bezier(.22,1,.36,1) both}
+
+.card-tabs{display:flex;border-bottom:1px solid var(--line2);background:var(--surface2)}
+.tab{padding:14px 24px;font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer;
+  border-bottom:2px solid transparent;transition:.15s;display:flex;align-items:center;gap:7px;
+  margin-bottom:-1px}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--blue2);border-bottom-color:var(--blue2);background:var(--surface)}
+.tab-icon{font-size:.95rem}
+
+.tab-panel{display:none;padding:28px}
+.tab-panel.active{display:block}
+
+/* ── INPUT AREA ── */
+.field-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.field-label::before{content:'';display:block;width:3px;height:11px;
+  background:var(--blue2);border-radius:2px}
+
+textarea.meeting-input{width:100%;min-height:200px;resize:vertical;
+  background:var(--bg);border:1px solid var(--line2);border-radius:var(--r2);
+  color:var(--ink);font-family:var(--ff);font-size:.88rem;line-height:1.75;
+  padding:16px 18px;outline:none;transition:border-color .2s,box-shadow .2s}
+textarea.meeting-input::placeholder{color:var(--muted2);font-style:italic}
+textarea.meeting-input:focus{border-color:var(--blue3);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+
+/* Samples */
+.sample-row{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 20px;align-items:center}
+.sample-lbl{font-size:.68rem;color:var(--muted2);font-weight:600;letter-spacing:.06em}
+.sample-btn{background:var(--surface2);border:1px solid var(--line2);border-radius:6px;
+  color:var(--muted);cursor:pointer;font-family:var(--ff);font-size:.73rem;font-weight:500;
+  padding:5px 12px;transition:.15s}
+.sample-btn:hover{border-color:var(--blue3);color:var(--blue2);background:rgba(37,99,235,.04)}
+
+/* Settings row */
+.settings-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.setting-field label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+
+select.light{background:var(--bg);border:1px solid var(--line2);border-radius:var(--r2);
+  color:var(--ink);width:100%;padding:9px 12px;cursor:pointer}
+select.light:focus{border-color:var(--blue3);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+
+/* Analyze button */
+.analyze-btn{width:100%;background:var(--navy);color:#fff;border:none;
+  border-radius:var(--r2);font-family:var(--ff);font-size:.95rem;font-weight:700;
+  padding:15px;cursor:pointer;position:relative;overflow:hidden;
+  transition:background .2s,transform .1s,box-shadow .2s;letter-spacing:.01em}
+.analyze-btn::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(37,99,235,.2),transparent);pointer-events:none}
+.analyze-btn:hover:not(:disabled){background:var(--navy2);transform:translateY(-1px);
+  box-shadow:0 8px 24px rgba(13,27,62,.25)}
+.analyze-btn:active:not(:disabled){transform:scale(.99)}
+.analyze-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+
+/* Progress */
+.progress-wrap{display:none;margin-top:18px}
+.progress-wrap.show{display:block}
+.progress-steps{display:flex;justify-content:space-between;margin-bottom:8px}
+.pstep{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;position:relative}
+.pstep::after{content:'';position:absolute;top:11px;left:50%;width:100%;height:1px;
+  background:var(--line2);z-index:0}
+.pstep:last-child::after{display:none}
+.pstep-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line2);
+  background:var(--surface);display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;z-index:1;transition:.3s;flex-shrink:0}
+.pstep.done .pstep-dot{background:var(--blue2);border-color:var(--blue2);color:#fff}
+.pstep.active .pstep-dot{border-color:var(--blue2);color:var(--blue2);
+  box-shadow:0 0 0 4px rgba(37,99,235,.12);animation:pdot 1s ease-in-out infinite}
+@keyframes pdot{0%,100%{box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+  50%{box-shadow:0 0 0 6px rgba(37,99,235,.06)}}
+.pstep-lbl{font-size:.62rem;color:var(--muted2);text-align:center;z-index:1}
+.pstep.done .pstep-lbl,.pstep.active .pstep-lbl{color:var(--blue2)}
+.progress-bar-track{height:3px;background:var(--bg2);border-radius:2px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue2),var(--blue3));
+  width:0;border-radius:2px;transition:width .4s ease}
+
+/* ── RESULTS ── */
+.results-wrap{display:none;margin-top:24px}
+.results-wrap.show{display:block;animation:fup .4s cubic-bezier(.22,1,.36,1) both}
+
+/* Score header */
+.score-header{display:grid;grid-template-columns:auto 1fr;gap:0;
+  background:var(--navy);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.score-left{padding:24px 28px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;border-right:1px solid rgba(255,255,255,.08);min-width:140px}
+.score-ring{position:relative;width:80px;height:80px}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring-num{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;flex-direction:column}
+.score-big{font-size:1.6rem;font-weight:800;color:#fff;line-height:1}
+.score-unit{font-size:.55rem;color:rgba(255,255,255,.5);letter-spacing:.08em}
+.score-lbl{font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin-top:8px;text-align:center}
+.score-right{padding:20px 24px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.score-title{font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px}
+.score-meta{display:flex;gap:10px;flex-wrap:wrap}
+.meta-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);border-radius:20px;
+  padding:3px 10px;font-size:.7rem;color:rgba(255,255,255,.7)}
+
+/* Result sections */
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:640px){.result-grid{grid-template-columns:1fr}}
+
+.result-section{background:var(--surface2);border:1px solid var(--line);
+  border-radius:var(--r2);overflow:hidden}
+.rs-header{padding:11px 16px;border-bottom:1px solid var(--line);
+  background:var(--surface);display:flex;align-items:center;gap:8px}
+.rs-icon{font-size:.95rem}
+.rs-title{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.rs-count{margin-left:auto;background:var(--bg2);border-radius:20px;
+  padding:2px 8px;font-size:.65rem;font-weight:600;color:var(--muted)}
+.rs-body{padding:14px 16px}
+
+/* Summary bullets */
+.summary-text{font-size:.88rem;color:var(--ink2);line-height:1.8;
+  white-space:pre-wrap}
+.typing::after{content:'▋';animation:cur .6s steps(1) infinite;color:var(--blue2)}
+@keyframes cur{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* Action items */
+.action-list{display:flex;flex-direction:column;gap:8px}
+.action-item{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r3)}
+.action-check{width:16px;height:16px;border:2px solid var(--line2);border-radius:4px;
+  flex-shrink:0;margin-top:2px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center}
+.action-check:hover{border-color:var(--blue2)}
+.action-check.checked{background:var(--blue2);border-color:var(--blue2)}
+.action-text{font-size:.82rem;color:var(--ink2);line-height:1.5;flex:1}
+.action-owner{font-size:.68rem;font-weight:600;color:var(--blue2);
+  background:rgba(37,99,235,.08);border-radius:4px;padding:1px 7px;
+  margin-left:auto;flex-shrink:0;white-space:nowrap}
+
+/* Decisions */
+.decision-list{display:flex;flex-direction:column;gap:7px}
+.decision-item{display:flex;gap:9px;align-items:flex-start;font-size:.82rem;color:var(--ink2);line-height:1.5}
+.decision-bullet{width:6px;height:6px;border-radius:50%;background:var(--green);
+  flex-shrink:0;margin-top:6px}
+
+/* Key topics */
+.topics-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.topic-tag{background:var(--bg2);border:1px solid var(--line2);border-radius:6px;
+  padding:4px 12px;font-size:.75rem;font-weight:500;color:var(--ink3)}
+
+/* Full report card */
+.report-card{background:var(--surface);border:1px solid var(--line2);
+  border-radius:var(--r2);overflow:hidden;margin-bottom:14px}
+.report-header{padding:14px 20px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;background:var(--surface2)}
+.report-title{font-size:.88rem;font-weight:700;color:var(--ink)}
+.report-tag{margin-left:auto;background:var(--navy);color:#fff;
+  font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 10px;border-radius:4px}
+.report-body{padding:20px}
+.report-text{font-size:.85rem;color:var(--ink2);line-height:1.85;white-space:pre-wrap}
+
+/* Action buttons */
+.action-btns{display:flex;gap:8px;flex-wrap:wrap}
+.act-btn{background:var(--surface2);border:1px solid var(--line2);border-radius:var(--r2);
+  color:var(--ink3);cursor:pointer;font-family:var(--ff);font-size:.78rem;font-weight:500;
+  padding:8px 18px;transition:.15s}
+.act-btn:hover{border-color:var(--blue3);color:var(--blue2);background:rgba(37,99,235,.04)}
+.act-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.act-btn.primary:hover{background:var(--navy2)}
+
+/* ── HISTORY TAB ── */
+.history-empty{text-align:center;padding:48px 0;color:var(--muted2)}
+.history-empty-icon{font-size:2.5rem;margin-bottom:12px;opacity:.4}
+.history-empty-text{font-size:.88rem}
+
+.history-list{display:flex;flex-direction:column;gap:10px}
+.history-item{background:var(--surface2);border:1px solid var(--line);
+  border-radius:var(--r2);padding:14px 18px;cursor:pointer;transition:.15s;
+  display:flex;align-items:center;gap:14px}
+.history-item:hover{border-color:var(--blue3);background:rgba(37,99,235,.02)}
+.hi-icon{width:38px;height:38px;background:var(--bg2);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.hi-info{flex:1}
+.hi-title{font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:3px}
+.hi-meta{font-size:.72rem;color:var(--muted2)}
+.hi-score{font-size:1rem;font-weight:700;color:var(--blue2)}
+
+/* ── ASK TAB ── */
+.ask-wrap{display:flex;flex-direction:column;gap:14px}
+.ask-input-row{display:flex;gap:8px}
+.ask-input{flex:1;background:var(--bg);border:1px solid var(--line2);border-radius:var(--r2);
+  color:var(--ink);font-family:var(--ff);font-size:.88rem;padding:12px 16px;outline:none;
+  transition:border-color .2s,box-shadow .2s}
+.ask-input:focus{border-color:var(--blue3);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.ask-input::placeholder{color:var(--muted2)}
+.ask-btn{background:var(--navy);border:none;border-radius:var(--r2);color:#fff;
+  font-family:var(--ff);font-size:.83rem;font-weight:600;padding:12px 20px;
+  cursor:pointer;transition:background .15s;white-space:nowrap}
+.ask-btn:hover{background:var(--navy2)}
+
+.ask-suggestions{display:flex;flex-wrap:wrap;gap:6px}
+.ask-sug{background:var(--surface2);border:1px solid var(--line2);border-radius:20px;
+  padding:5px 14px;font-size:.75rem;color:var(--muted);cursor:pointer;transition:.15s}
+.ask-sug:hover{border-color:var(--blue3);color:var(--blue2);background:rgba(37,99,235,.04)}
+
+.ask-answer{background:var(--surface2);border:1px solid var(--line);border-radius:var(--r2);
+  padding:18px 20px;min-height:80px;display:none}
+.ask-answer.show{display:block;animation:fup .3s cubic-bezier(.22,1,.36,1) both}
+.answer-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--blue2);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.answer-text{font-size:.88rem;color:var(--ink2);line-height:1.8}
+
+.no-meetings-note{background:var(--amber-bg);border:1px solid rgba(217,119,6,.2);
+  border-radius:var(--r2);padding:12px 16px;font-size:.8rem;color:var(--amber);
+  display:flex;align-items:center;gap:8px}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(60px);opacity:0;
+  background:var(--navy);border-radius:30px;padding:10px 22px;
+  font-size:.78rem;color:#fff;transition:all .28s cubic-bezier(.22,1,.36,1);
+  z-index:200;white-space:nowrap;pointer-events:none;box-shadow:var(--shadow2)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="#">
+    <div class="logo-mark">
+      <svg viewBox="0 0 20 20"><path d="M3 5h14M3 10h9M3 15h11"/><circle cx="16" cy="10" r="3"/></svg>
+    </div>
+    <span class="logo-name">Meet<span>Mind</span></span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="#">Analyze</a>
+    <a class="nav-link" href="#">History</a>
+    <a class="nav-link" href="#">Ask AI</a>
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-badge">AI Portfolio · Project 7</div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-chip"><span class="hero-chip-dot"></span>AI-Powered Meeting Intelligence</div>
+    <h1>Turn any meeting into<br><span>actionable intelligence</span></h1>
+    <p class="tagline">Paste your meeting transcript. Get a smart summary, decisions,<br>action items, and a full report — in seconds.</p>
+    <div class="stat-strip">
+      <div class="stat-item"><span class="stat-n">30s</span><span class="stat-l">Analysis Time</span></div>
+      <div class="stat-item"><span class="stat-n">5</span><span class="stat-l">Output Sections</span></div>
+      <div class="stat-item"><span class="stat-n">2</span><span class="stat-l">Languages</span></div>
+      <div class="stat-item"><span class="stat-n">∞</span><span class="stat-l">Meetings Stored</span></div>
+    </div>
+  </div>
+
+  <!-- API KEY -->
+  <div class="key-section">
+    <div class="key-card">
+      <span style="font-size:1.2rem">🔑</span>
+      <div class="key-info">
+        <strong>Anthropic API Key</strong>
+        <span>Free at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> · Stored in browser only</span>
+      </div>
+      <div class="key-row">
+        <input type="password" id="api-key" placeholder="sk-ant-api03-..." autocomplete="off">
+        <button class="btn-save" onclick="saveKey()">Save ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="main-card">
+
+    <div class="card-tabs">
+      <div class="tab active" onclick="switchTab('analyze',this)"><span class="tab-icon">⚡</span>Analyze Meeting</div>
+      <div class="tab" onclick="switchTab('history',this)"><span class="tab-icon">📂</span>History <span id="history-count" style="background:var(--bg2);border-radius:10px;padding:1px 7px;font-size:.68rem;margin-left:4px">0</span></div>
+      <div class="tab" onclick="switchTab('ask',this)"><span class="tab-icon">💬</span>Ask AI</div>
+    </div>
+
+    <!-- ANALYZE TAB -->
+    <div class="tab-panel active" id="tab-analyze">
+
+      <div class="field-label">Meeting Transcript or Notes</div>
+      <textarea class="meeting-input" id="meeting-text"
+        placeholder="Paste your meeting transcript here...&#10;&#10;Can be: raw transcript, meeting notes, chat export, or any text from your meeting.&#10;Supports Arabic and English."></textarea>
+
+      <div class="sample-row">
+        <span class="sample-lbl">Try sample:</span>
+        <button class="sample-btn" onclick="loadSample('product')">🚀 Product Planning</button>
+        <button class="sample-btn" onclick="loadSample('sales')">💼 Sales Review</button>
+        <button class="sample-btn" onclick="loadSample('arabic')">🇸🇦 اجتماع عربي</button>
+      </div>
+
+      <div class="settings-row">
+        <div class="setting-field">
+          <label>Output Language</label>
+          <select class="light" id="output-lang">
+            <option value="en">🇬🇧 English</option>
+            <option value="ar">🇸🇦 العربية</option>
+          </select>
+        </div>
+        <div class="setting-field">
+          <label>Meeting Type</label>
+          <select class="light" id="meeting-type">
+            <option value="general">General Meeting</option>
+            <option value="product">Product Planning</option>
+            <option value="sales">Sales / Revenue</option>
+            <option value="hr">HR / Team</option>
+            <option value="strategy">Strategy Session</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="analyze-btn" id="analyze-btn" onclick="analyzeMeeting()">
+        ⚡ Analyze & Generate Report
+      </button>
+
+      <!-- Progress -->
+      <div class="progress-wrap" id="progress-wrap">
+        <div class="progress-steps" id="progress-steps">
+          <div class="pstep" id="ps1"><div class="pstep-dot">1</div><div class="pstep-lbl">Reading</div></div>
+          <div class="pstep" id="ps2"><div class="pstep-dot">2</div><div class="pstep-lbl">Summarizing</div></div>
+          <div class="pstep" id="ps3"><div class="pstep-dot">3</div><div class="pstep-lbl">Extracting</div></div>
+          <div class="pstep" id="ps4"><div class="pstep-dot">4</div><div class="pstep-lbl">Reporting</div></div>
+          <div class="pstep" id="ps5"><div class="pstep-dot">✓</div><div class="pstep-lbl">Done</div></div>
+        </div>
+        <div class="progress-bar-track" style="margin-top:10px">
+          <div class="progress-bar-fill" id="prog-fill"></div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="results-wrap" id="results-wrap">
+
+        <!-- Score header -->
+        <div class="score-header" id="score-header">
+          <div class="score-left">
+            <div class="score-ring">
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="5"/>
+                <circle id="score-circle" cx="40" cy="40" r="34" fill="none" stroke="#3b82f6"
+                  stroke-width="5" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6"/>
+              </svg>
+              <div class="score-ring-num">
+                <span class="score-big" id="score-num">--</span>
+                <span class="score-unit">/ 100</span>
+              </div>
+            </div>
+            <div class="score-lbl">Meeting Score</div>
+          </div>
+          <div class="score-right">
+            <div class="score-title" id="meeting-title">Analysis Complete</div>
+            <div class="score-meta" id="score-meta"></div>
+          </div>
+        </div>
+
+        <!-- 2-col grid -->
+        <div class="result-grid">
+
+          <div class="result-section">
+            <div class="rs-header"><span class="rs-icon">📋</span><span class="rs-title">Executive Summary</span></div>
+            <div class="rs-body"><div class="summary-text" id="summary-text"></div></div>
+          </div>
+
+          <div class="result-section">
+            <div class="rs-header">
+              <span class="rs-icon">✅</span><span class="rs-title">Action Items</span>
+              <span class="rs-count" id="actions-count">0</span>
+            </div>
+            <div class="rs-body"><div class="action-list" id="action-list"></div></div>
+          </div>
+
+          <div class="result-section">
+            <div class="rs-header">
+              <span class="rs-icon">🎯</span><span class="rs-title">Key Decisions</span>
+              <span class="rs-count" id="decisions-count">0</span>
+            </div>
+            <div class="rs-body"><div class="decision-list" id="decision-list"></div></div>
+          </div>
+
+          <div class="result-section">
+            <div class="rs-header"><span class="rs-icon">🏷️</span><span class="rs-title">Key Topics</span></div>
+            <div class="rs-body"><div class="topics-wrap" id="topics-wrap"></div></div>
+          </div>
+
+        </div>
+
+        <!-- Full report -->
+        <div class="report-card">
+          <div class="report-header">
+            <span style="font-size:1rem">📄</span>
+            <span class="report-title">Full Meeting Report</span>
+            <span class="report-tag">Ready to Share</span>
+          </div>
+          <div class="report-body">
+            <div class="report-text" id="report-text"></div>
+          </div>
+        </div>
+
+        <div class="action-btns">
+          <button class="act-btn primary" onclick="copyReport()">Copy Report ✦</button>
+          <button class="act-btn" onclick="saveToHistory()">Save to History 📂</button>
+          <button class="act-btn" onclick="analyzeMeeting()">Re-analyze ↺</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div class="tab-panel" id="tab-history">
+      <div class="history-empty" id="history-empty">
+        <div class="history-empty-icon">📂</div>
+        <div class="history-empty-text">No meetings saved yet.<br>Analyze a meeting and click "Save to History".</div>
+      </div>
+      <div class="history-list" id="history-list"></div>
+    </div>
+
+    <!-- ASK TAB -->
+    <div class="tab-panel" id="tab-ask">
+      <div class="ask-wrap">
+        <div id="no-meetings-note" class="no-meetings-note">
+          <span>⚠️</span>
+          <span>Analyze and save at least one meeting first to ask questions about your meetings.</span>
+        </div>
+
+        <div>
+          <div class="field-label">Ask Anything About Your Meetings</div>
+          <div class="ask-input-row">
+            <input type="text" class="ask-input" id="ask-input"
+              placeholder="What was decided about the budget in the last meeting?"
+              onkeydown="if(event.key==='Enter') askQuestion()">
+            <button class="ask-btn" onclick="askQuestion()">Ask ↗</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" style="margin-bottom:8px">Suggested questions</div>
+          <div class="ask-suggestions">
+            <button class="ask-sug" onclick="setAsk('What are all the pending action items?')">Pending action items?</button>
+            <button class="ask-sug" onclick="setAsk('What were the main decisions made?')">Main decisions made?</button>
+            <button class="ask-sug" onclick="setAsk('Who was assigned the most tasks?')">Who has most tasks?</button>
+            <button class="ask-sug" onclick="setAsk('Summarize all meetings in one paragraph')">Overall summary?</button>
+            <button class="ask-sug" onclick="setAsk('What topics came up most frequently?')">Recurring topics?</button>
+          </div>
+        </div>
+
+        <div class="ask-answer" id="ask-answer">
+          <div class="answer-label">💡 AI Answer</div>
+          <div class="answer-text" id="answer-text"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══ STATE ══ */
+const APP = {
+  currentResult: null,
+  meetings: JSON.parse(localStorage.getItem('mm_meetings') || '[]'),
+};
+
+/* ══ SAMPLES ══ */
+const SAMPLES = {
+  product: `Meeting: Product Roadmap Q2 2025
+Date: March 20, 2025
+Attendees: Sarah (PM), Ahmed (Lead Dev), Lina (Design), Omar (Marketing)
+
+Sarah: Let's kick off. We need to finalize what goes into Q2. Ahmed, where are we on the API integration?
+
+Ahmed: The payment gateway is 80% done. Should be ready by April 15th. The notification system needs 2 more weeks after that.
+
+Sarah: Good. Lina, what's the status on the new onboarding flow?
+
+Lina: Designs are done and approved. I'm handing off to Ahmed's team tomorrow. One thing — we need to decide on the color palette for the dark mode before handoff.
+
+Sarah: Let's go with option B from last week's review. Omar, what do we need from marketing side?
+
+Omar: We need the beta features list by April 10th to start the pre-launch campaign. Also, can we get 3 case studies from existing customers?
+
+Sarah: Agreed. Ahmed will own the payment gateway delivery. Lina will finalize dark mode specs today. Omar needs the beta list from Sarah by April 8th. I'll reach out to 3 customers for case studies this week.
+
+Any blockers? 
+
+Ahmed: We need access to the staging environment for the payment tests. IT hasn't responded to the ticket.
+
+Sarah: I'll escalate that today. Any other items? Okay, let's wrap up. Next meeting same time next week.`,
+
+  sales: `Weekly Sales Review — March 22, 2025
+Present: Marcus (VP Sales), Diana (Account Exec), Ravi (Business Dev), Chen (Sales Ops)
+
+Marcus: Q1 is closing in 10 days. Where do we stand?
+
+Diana: I'm at 94% of quota. Two deals are stuck — TechCorp ($120K) needs legal approval, GlobalMed ($85K) is waiting on their budget cycle.
+
+Ravi: I closed FormulaCo yesterday for $67K. Pipeline looks strong for Q2 — three enterprise prospects worth about $400K total.
+
+Marcus: Good work on FormulaCo. For the stuck deals, Diana — can we offer TechCorp an extended payment term? 
+
+Diana: Worth trying. I'll propose net-90 terms.
+
+Marcus: Chen, what does the data tell us?
+
+Chen: Average deal cycle is 47 days, up from 38 last quarter. The bottleneck is contract review — taking 12 days on average. Also, demos are converting at 34%, which is above benchmark.
+
+Marcus: We need to compress that contract cycle. Ravi, can you draft a lighter contract template for deals under $50K? 
+
+Ravi: I'll have a draft by Friday.
+
+Marcus: Action items: Diana to propose payment terms to TechCorp by Tuesday, Ravi to draft contract template by Friday, Chen to set up a contract cycle dashboard. I'll speak to legal about a fast-track process. Let's close Q1 strong.`,
+
+  arabic: `اجتماع: مراجعة أداء الفريق الشهرية
+التاريخ: 22 مارس 2025
+الحضور: خالد (المدير)، نورة (مطورة)، سلطان (تسويق)، ريم (عمليات)
+
+خالد: نبدأ بمراجعة الأهداف الشهرية. نورة، وين وصلنا في تطوير التطبيق؟
+
+نورة: أنهينا الـ MVP وجاهز للاختبار. بس في مشكلة في الـ performance على الأجهزة القديمة. محتاج أسبوع إضافي لحلها.
+
+خالد: طيب، وش السبب؟
+
+نورة: الـ database queries غير محسّنة. راح أضغط كل القرارات في session واحدة بدل ما تكون منفصلة.
+
+سلطان: بالنسبة للتسويق، أطلقنا الحملة الإعلانية وحصلنا على 2000 تسجيل مسبق. بس الـ conversion rate من الإعلان للتسجيل بس 3%، أقل من المتوقع.
+
+خالد: وش توصيتك؟
+
+سلطان: نغير الـ landing page ونجرب A/B testing. أقدر أعمل النسخة الجديدة خلال 3 أيام.
+
+ريم: من ناحية العمليات، انتهينا من تدريب فريق الدعم. وعندنا موعد مع المزود للتعاقد الأسبوع الجاي.
+
+خالد: ممتاز. القرارات: نؤجل الإطلاق أسبوع لحين حل مشكلة الـ performance. سلطان يبدأ A/B testing على الـ landing page. ريم تنهي التعاقد مع المزود الأسبوع الجاي. نورة ترفع تقرير تقني عن المشكلة قبل الخميس.`
+};
+
+function loadSample(key) {
+  document.getElementById('meeting-text').value = SAMPLES[key];
+  if (key === 'arabic') document.getElementById('output-lang').value = 'ar';
+  toast('Sample loaded ✓', 'ok');
+}
+
+/* ══ TABS ══ */
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'history') renderHistory();
+  if (name === 'ask') updateAskNote();
+}
+
+/* ══ API KEY ══ */
+function saveKey() {
+  const v = document.getElementById('api-key').value.trim();
+  if (!v) { toast('Enter API key first', 'err'); return; }
+  if (!v.startsWith('sk-ant')) { toast('Invalid — must start with sk-ant', 'err'); return; }
+  localStorage.setItem('mm_key', v);
+  document.getElementById('api-key').value = v.slice(0, 14) + '••••••••••';
+  toast('Key saved ✓', 'ok');
+}
+function getKey() { return localStorage.getItem('mm_key') || ''; }
+window.addEventListener('load', () => {
+  const k = getKey();
+  if (k) document.getElementById('api-key').value = k.slice(0, 14) + '••••••••••';
+  updateHistoryCount();
+});
+
+/* ══ PROGRESS ══ */
+function setStep(n) {
+  document.getElementById('prog-fill').style.width = (n * 20) + '%';
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('ps' + i);
+    el.className = 'pstep' + (i < n ? ' done' : i === n ? ' active' : '');
+  }
+}
+
+/* ══ MAIN ANALYSIS ══ */
+async function analyzeMeeting() {
+  const key = getKey();
+  if (!key) { toast('Add API key first', 'err'); return; }
+  const text = document.getElementById('meeting-text').value.trim();
+  if (!text || text.length < 50) { toast('Paste meeting content first', 'err'); return; }
+
+  const lang = document.getElementById('output-lang').value;
+  const mtype = document.getElementById('meeting-type').value;
+
+  const btn = document.getElementById('analyze-btn');
+  btn.disabled = true; btn.textContent = '⏳ Analyzing...';
+  document.getElementById('results-wrap').classList.remove('show');
+  document.getElementById('progress-wrap').classList.add('show');
+  setStep(1);
+
+  try {
+    await delay(250); setStep(2);
+
+    const isAr = lang === 'ar';
+    const langInstr = isAr
+      ? 'اكتب كل المخرجات باللغة العربية الفصحى فقط.'
+      : 'Write all outputs in English only.';
+
+    const sys = `You are an expert meeting intelligence analyst. Analyze the provided meeting transcript and extract structured insights.
+
+${langInstr}
+
+Return ONLY a valid JSON object (no markdown, no explanation):
+{
+  "meeting_score": <integer 0-100, based on meeting effectiveness and clarity>,
+  "meeting_title": "<short descriptive title for this meeting, max 6 words>",
+  "meta": {
+    "participants": <estimated number of participants>,
+    "duration_estimate": "<estimated duration e.g. '45 min'>",
+    "meeting_type": "${mtype}"
+  },
+  "executive_summary": "<3-4 sentence executive summary covering main purpose, key outcomes, and next steps>",
+  "action_items": [
+    { "task": "<clear actionable task>", "owner": "<person name or team>" }
+  ],
+  "decisions": ["<decision 1>", "<decision 2>"],
+  "key_topics": ["<topic1>", "<topic2>", "<topic3>"],
+  "full_report": "<professional meeting report with sections: Meeting Overview, Key Discussion Points, Decisions Made, Action Items & Owners, Next Steps. Use plain text, no markdown symbols.>"
+}
+
+Rules:
+- action_items: 3-8 items with clear owners when mentioned
+- decisions: 2-6 key decisions made
+- key_topics: 4-8 topic tags
+- meeting_score: 85-100=excellent, 65-84=good, 45-64=fair, <45=needs improvement
+- full_report: professional, ready to email, 200-350 words`;
+
+    setStep(3);
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-6',
+        max_tokens: 2000,
+        system: sys,
+        messages: [{ role: 'user', content: `Analyze this meeting:\n\n${text}` }]
+      })
+    });
+
+    setStep(4);
+
+    if (!res.ok) {
+      const ed = await res.json().catch(() => ({}));
+      if (res.status === 401) throw new Error('Invalid or expired API key.');
+      throw new Error(ed?.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    let raw = (data?.content?.[0]?.text || '').replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
+
+    let result;
+    try {
+      result = JSON.parse(raw);
+    } catch(e) {
+      const m = raw.match(/\{[\s\S]*\}/);
+      if (m) result = JSON.parse(m[0]);
+      else throw new Error('Could not parse response. Please try again.');
+    }
+
+    setStep(5);
+    await delay(300);
+
+    APP.currentResult = { ...result, transcript: text, date: new Date().toISOString() };
+    renderResults(result);
+
+  } catch(err) {
+    toast('Error: ' + err.message, 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '⚡ Analyze & Generate Report';
+    document.getElementById('progress-wrap').classList.remove('show');
+  }
+}
+
+/* ══ RENDER ══ */
+function renderResults(r) {
+  const score = r.meeting_score || 72;
+
+  // Score ring
+  const circumference = 213.6;
+  const offset = circumference - (score / 100) * circumference;
+  document.getElementById('score-circle').style.strokeDashoffset = circumference;
+  setTimeout(() => {
+    document.getElementById('score-circle').style.transition = 'stroke-dashoffset 1s ease';
+    document.getElementById('score-circle').style.strokeDashoffset = offset;
+    // Color by score
+    const color = score >= 75 ? '#10b981' : score >= 50 ? '#f59e0b' : '#ef4444';
+    document.getElementById('score-circle').style.stroke = color;
+  }, 100);
+
+  animateNum('score-num', 0, score, 1000);
+  document.getElementById('meeting-title').textContent = r.meeting_title || 'Meeting Analysis';
+
+  // Meta chips
+  const meta = r.meta || {};
+  const metaEl = document.getElementById('score-meta');
+  metaEl.innerHTML = '';
+  if (meta.participants) metaEl.innerHTML += `<span class="meta-chip">👥 ${meta.participants} participants</span>`;
+  if (meta.duration_estimate) metaEl.innerHTML += `<span class="meta-chip">⏱ ${meta.duration_estimate}</span>`;
+  metaEl.innerHTML += `<span class="meta-chip">📅 ${new Date().toLocaleDateString()}</span>`;
+
+  // Summary — typewriter
+  const sumEl = document.getElementById('summary-text');
+  sumEl.textContent = '';
+  typeWriter(sumEl, r.executive_summary || '');
+
+  // Action items
+  const actions = r.action_items || [];
+  document.getElementById('actions-count').textContent = actions.length;
+  const actionList = document.getElementById('action-list');
+  actionList.innerHTML = '';
+  actions.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.className = 'action-item';
+    div.innerHTML = `
+      <div class="action-check" onclick="this.classList.toggle('checked')" title="Mark complete">
+        <span style="color:#fff;font-size:.6rem;display:none">✓</span>
+      </div>
+      <div class="action-text">${escHtml(a.task)}</div>
+      ${a.owner ? `<span class="action-owner">${escHtml(a.owner)}</span>` : ''}`;
+    div.querySelector('.action-check').addEventListener('click', function() {
+      const tick = this.querySelector('span');
+      tick.style.display = this.classList.contains('checked') ? 'block' : 'none';
+    });
+    actionList.appendChild(div);
+  });
+
+  // Decisions
+  const decs = r.decisions || [];
+  document.getElementById('decisions-count').textContent = decs.length;
+  const decList = document.getElementById('decision-list');
+  decList.innerHTML = '';
+  decs.forEach(d => {
+    const div = document.createElement('div');
+    div.className = 'decision-item';
+    div.innerHTML = `<div class="decision-bullet"></div><span>${escHtml(d)}</span>`;
+    decList.appendChild(div);
+  });
+
+  // Topics
+  const topics = r.key_topics || [];
+  const topicsEl = document.getElementById('topics-wrap');
+  topicsEl.innerHTML = topics.map(t => `<span class="topic-tag">${escHtml(t)}</span>`).join('');
+
+  // Full report
+  document.getElementById('report-text').textContent = r.full_report || '';
+
+  document.getElementById('results-wrap').classList.add('show');
+  setTimeout(() => document.getElementById('results-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+/* ══ HISTORY ══ */
+function saveToHistory() {
+  if (!APP.currentResult) { toast('Nothing to save yet', 'err'); return; }
+  const existing = APP.meetings.findIndex(m => m.date === APP.currentResult.date);
+  if (existing === -1) {
+    APP.meetings.unshift(APP.currentResult);
+    localStorage.setItem('mm_meetings', JSON.stringify(APP.meetings));
+    updateHistoryCount();
+    toast('Saved to history ✓', 'ok');
+  } else {
+    toast('Already saved', 'err');
+  }
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  const empty = document.getElementById('history-empty');
+  list.innerHTML = '';
+  if (!APP.meetings.length) {
+    empty.style.display = 'block'; return;
+  }
+  empty.style.display = 'none';
+  APP.meetings.forEach((m, i) => {
+    const score = m.meeting_score || 0;
+    const color = score >= 75 ? '#10b981' : score >= 50 ? '#f59e0b' : '#ef4444';
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `
+      <div class="hi-icon">📋</div>
+      <div class="hi-info">
+        <div class="hi-title">${escHtml(m.meeting_title || 'Meeting ' + (i+1))}</div>
+        <div class="hi-meta">${new Date(m.date).toLocaleDateString()} · ${(m.action_items||[]).length} actions · ${(m.decisions||[]).length} decisions</div>
+      </div>
+      <div class="hi-score" style="color:${color}">${score}</div>`;
+    div.onclick = () => {
+      APP.currentResult = m;
+      document.querySelector('[onclick*="analyze"]').click();
+      document.getElementById('meeting-text').value = m.transcript || '';
+      renderResults(m);
+    };
+    list.appendChild(div);
+  });
+}
+
+function updateHistoryCount() {
+  document.getElementById('history-count').textContent = APP.meetings.length;
+}
+
+/* ══ ASK AI ══ */
+function updateAskNote() {
+  const note = document.getElementById('no-meetings-note');
+  note.style.display = APP.meetings.length ? 'none' : 'flex';
+}
+
+function setAsk(q) { document.getElementById('ask-input').value = q; }
+
+async function askQuestion() {
+  const key = getKey();
+  if (!key) { toast('Add API key first', 'err'); return; }
+  if (!APP.meetings.length) { toast('Save a meeting first', 'err'); return; }
+
+  const q = document.getElementById('ask-input').value.trim();
+  if (!q) { toast('Enter a question', 'err'); return; }
+
+  const answerEl = document.getElementById('ask-answer');
+  const answerText = document.getElementById('answer-text');
+  answerEl.classList.add('show');
+  answerText.textContent = 'Thinking...';
+
+  const context = APP.meetings.slice(0, 5).map((m, i) =>
+    `Meeting ${i+1}: "${m.meeting_title}" (${new Date(m.date).toLocaleDateString()})\n` +
+    `Summary: ${m.executive_summary}\n` +
+    `Actions: ${(m.action_items||[]).map(a => `${a.task} (${a.owner})`).join(', ')}\n` +
+    `Decisions: ${(m.decisions||[]).join(', ')}`
+  ).join('\n\n---\n\n');
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-6',
+        max_tokens: 400,
+        system: `You are a meeting intelligence assistant. Answer questions based ONLY on the provided meeting data. Be concise and direct. If the answer isn't in the data, say so clearly. Match the language of the question.`,
+        messages: [{
+          role: 'user',
+          content: `Meeting data:\n\n${context}\n\nQuestion: ${q}`
+        }]
+      })
+    });
+
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+    const answer = data?.content?.[0]?.text || 'No answer found.';
+    answerText.textContent = '';
+    typeWriter(answerText, answer);
+
+  } catch(err) {
+    answerText.textContent = 'Error: ' + err.message;
+  }
+}
+
+/* ══ COPY ══ */
+function copyReport() {
+  const text = document.getElementById('report-text').textContent;
+  if (!text) { toast('No report to copy', 'err'); return; }
+  navigator.clipboard.writeText(text).then(() => toast('Report copied ✓', 'ok'));
+}
+
+/* ══ TYPEWRITER ══ */
+function typeWriter(el, text) {
+  el.classList.add('typing');
+  let i = 0;
+  const tick = () => {
+    if (i < text.length) { el.textContent += text[i++]; setTimeout(tick, i < 80 ? 12 : 5); }
+    else el.classList.remove('typing');
+  };
+  tick();
+}
+
+/* ══ HELPERS ══ */
+function animateNum(id, from, to, dur) {
+  const el = document.getElementById(id);
+  const start = performance.now();
+  const tick = (now) => {
+    const p = Math.min((now - start) / dur, 1);
+    el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = `toast show ${type}`;
+  clearTimeout(el._t); el._t = setTimeout(() => el.className = 'toast', 3000);
+}
+</script>
+</body>
+</html>
